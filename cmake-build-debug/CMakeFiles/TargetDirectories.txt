@@ -1,0 +1,5 @@
+/Users/waz/GLRender/cmake-build-debug/CMakeFiles/main.dir
+/Users/waz/GLRender/cmake-build-debug/CMakeFiles/glad.dir
+/Users/waz/GLRender/cmake-build-debug/CMakeFiles/imgui.dir
+/Users/waz/GLRender/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/waz/GLRender/cmake-build-debug/CMakeFiles/rebuild_cache.dir
