@@ -2,7 +2,10 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
-#include "imgui.h"
+#include <fstream>
+#include <sstream>
+
+#include <imgui.h>
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_glfw.h"
 
@@ -14,20 +17,37 @@ void processInput(GLFWwindow *window);
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-const char *vertexShaderSource ="#version 330 core\n"
-                                "layout (location = 0) in vec3 aPos;\n"
-                                "void main()\n"
-                                "{\n"
-                                "   gl_Position = vec4(aPos, 1.0);\n"
-                                "}\0";
 
-const char *fragmentShaderSource = "#version 330 core\n"
-                                   "out vec4 FragColor;\n"
-                                   "uniform vec4 ourColor;\n"
-                                   "void main()\n"
-                                   "{\n"
-                                   "   FragColor = ourColor;\n"
-                                   "}\n\0";
+struct ShaderProgramSource {
+    std::string  vertexShader;
+    std::string  fragmentShader;
+};
+
+static ShaderProgramSource parseShader(const std::string& filepath) {
+    enum class ShaderType {
+        NONE = -1, VERTEX = 0, FRAGMENT = 1,
+    };
+
+
+    std::ifstream stream(filepath);
+    std::string line;
+    std::stringstream ss[2];
+    ShaderType type = ShaderType::NONE;
+    std::cout <<"start\n";
+    while(getline(stream, line)) {
+        std::cout << line << std::endl;
+        if (line.find("#shader") != std::string::npos) {
+            if (line.find("vertex") != std::string::npos) {
+                type = ShaderType::VERTEX;
+            } else if (line.find("fragment") != std::string::npos) {
+                type = ShaderType::FRAGMENT;
+            }
+        } else {
+            ss[(int)type] << line << "\n";
+        }
+    }
+    return {ss[0].str(), ss[1].str()};
+}
 
 int main()
 {
@@ -57,8 +77,10 @@ int main()
         return -1;
     }
 
+    ShaderProgramSource source = parseShader("res/shaders/rectangle.shader");
+    const char * vs = source.vertexShader.c_str();
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glShaderSource(vertexShader, 1, &vs, NULL);
     glCompileShader(vertexShader);
     // check for shader compile errors
     int success;
@@ -70,8 +92,9 @@ int main()
         std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
     // fragment shader
+    const char * vf = source.fragmentShader.c_str();
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glShaderSource(fragmentShader, 1, &vf, NULL);
     glCompileShader(fragmentShader);
     // check for shader compile errors
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
@@ -129,7 +152,7 @@ int main()
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGuiIO& io = ImGui::GetIO();
 
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsLight();
