@@ -10,7 +10,7 @@ add_executable(main)
 
 add_link_options( -framework OpenGL)
 
-aux_source_directory(./src sources)
+file(GLOB_RECURSE sources CONFIGURE_DEPENDS src/*.cpp src/*.h)
 target_sources(main PUBLIC ${sources})
 
 find_package(glfw3  REQUIRED)

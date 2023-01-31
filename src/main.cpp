@@ -6,8 +6,8 @@
 #include <sstream>
 
 #include <imgui.h>
-#include "imgui_impl_opengl3.h"
-#include "imgui_impl_glfw.h"
+#include "imgui/include/imgui_impl_opengl3.h"
+#include "imgui/include/imgui_impl_glfw.h"
 
 
 #define GL_SILENCE_DEPRECATION
