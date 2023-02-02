@@ -6,7 +6,7 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-add_executable(main)
+add_executable(main src/renderer/VertexArray.cpp src/renderer/VertexArray.h src/renderer/VertexBufferLayout.cpp src/renderer/VertexBufferLayout.h)
 
 add_link_options( -framework OpenGL)
 
@@ -36,7 +36,7 @@ add_custom_target(copy_res ALL
         COMMENT "copying")
 
 #file(GLOB shader_files res/shaders/*)
-#message(${shader_files})
+# message(${shader_files})
 ## Define a custom target to copy the files
 #add_custom_target(copy_res ALL
 #        COMMAND ${CMAKE_COMMAND} -E copy_if_different
