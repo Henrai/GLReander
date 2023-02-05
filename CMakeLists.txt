@@ -6,7 +6,7 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-add_executable(main src/renderer/VertexArray.cpp src/renderer/VertexArray.h src/renderer/VertexBufferLayout.cpp src/renderer/VertexBufferLayout.h)
+add_executable(main src/renderer/VertexArray.cpp src/renderer/VertexArray.h src/renderer/VertexBufferLayout.cpp src/renderer/VertexBufferLayout.h src/renderer/Shader.cpp src/renderer/Shader.h)
 
 add_link_options( -framework OpenGL)
 

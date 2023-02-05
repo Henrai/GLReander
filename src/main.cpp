@@ -12,6 +12,7 @@
 #include "renderer/IndexBuffer.h"
 #include "renderer/VertexBuffer.h"
 #include "renderer/VertexArray.h"
+#include "renderer/Shader.h"
 
 #define GL_SILENCE_DEPRECATION
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -21,35 +22,6 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-struct ShaderProgramSource {
-    std::string  vertexShader;
-    std::string  fragmentShader;
-};
-
-static ShaderProgramSource parseShader(const std::string& filepath) {
-    enum class ShaderType {
-        NONE = -1, VERTEX = 0, FRAGMENT = 1,
-    };
-
-    std::ifstream stream(filepath);
-    std::string line;
-    std::stringstream ss[2];
-    ShaderType type = ShaderType::NONE;
-    //std::cout <<"start\n";
-    while(getline(stream, line)) {
-        //std::cout << line << std::endl;
-        if (line.find("#shader") != std::string::npos) {
-            if (line.find("vertex") != std::string::npos) {
-                type = ShaderType::VERTEX;
-            } else if (line.find("fragment") != std::string::npos) {
-                type = ShaderType::FRAGMENT;
-            }
-        } else {
-            ss[(int)type] << line << "\n";
-        }
-    }
-    return {ss[0].str(), ss[1].str()};
-}
 
 int main()
 {
@@ -78,46 +50,7 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-
-    ShaderProgramSource source = parseShader("res/shaders/rectangle.shader");
-    const char * vs = source.vertexShader.c_str();
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vs, NULL);
-    glCompileShader(vertexShader);
-    // check for shader compile errors
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-    // fragment shader
-    const char * vf = source.fragmentShader.c_str();
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &vf, NULL);
-    glCompileShader(fragmentShader);
-    // check for shader compile errors
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-    // link shaders
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    // check for linking errors
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    Shader shader("res/shaders/rectangle.shader");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -139,16 +72,9 @@ int main()
     VertexBufferLayout layout;
     layout.Push<float>(2);
     va.AddBuffer(vb, layout);
-
     IndexBuffer ib(indices, 6);
-
-    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    //glEnableVertexAttribArray(0);
-
-    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    glBindVertexArray(0);
+    ib.UnBind();
+    va.UnBind();
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -169,24 +95,21 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::Begin("tools");                          // Create a window called "Hello, world!" and append into it.
-        ImGui::Text("back ground color");               // Display some text (you can use a format strings too)
-        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+        ImGui::Begin("tools");
+        ImGui::Text("back ground color");
+        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
         ImGui::End();
 
         glClearColor(  0.2f,  0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // draw our first triangle
-        glUseProgram(shaderProgram);
-        //glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-        va.Bind();
-        int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-        //float greenValue = static_cast<float>(f / 2.0 + 0.5);
-        glUniform4f(vertexColorLocation, 1.0f, f, 1.0f, 1.0f);
+        shader.Bind();
 
-        //glDrawArrays(GL_TRIANGLES, 0, 6);
+        va.Bind();
+
+        shader.setUniform4f("ourColor", 1.0f, f, 1.0f, 1.0f);
+
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         ImGui::Render();
@@ -197,7 +120,7 @@ int main()
         glfwPollEvents();
     }
 
-    glUseProgram(shaderProgram);
+    shader.UnBind();
     glfwTerminate();
     return 0;
 }
