@@ -7,6 +7,7 @@
 
 #include <string>
 #include <glad/glad.h>
+#include <unordered_map>
 
 struct ShaderProgramSource;
 
@@ -19,6 +20,7 @@ class Shader {
 private:
     std::string mFilePath;
     unsigned int mRendererID;
+    std::unordered_map<std::string, unsigned int> mUniformLocationCache;
 
 public:
     Shader(const std::string& filePath);
@@ -32,9 +34,7 @@ public:
     }
 
 private:
-    unsigned int GetUniformLocation(const std::string& name) {
-       return glGetUniformLocation(mRendererID, name.c_str());
-    }
+    unsigned int GetUniformLocation(const std::string& name);
     ShaderProgramSource parseShader();
     unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader);
     unsigned int CompileShader(unsigned int type, const std::string source);

@@ -86,3 +86,14 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string shader) 
     }
     return id;
 }
+
+unsigned int Shader::GetUniformLocation(const std::string &name) {
+    if(mUniformLocationCache.find(name) != mUniformLocationCache.end())
+        return mUniformLocationCache[name];
+    GL_CALL(unsigned int location = glGetUniformLocation(mRendererID, name.c_str()));
+    if(location == -1) {
+        std::cout << "Warning: " << name << " doesn't exist" << std::endl;
+    }
+    mUniformLocationCache[name] = location;
+    return location;
+}
