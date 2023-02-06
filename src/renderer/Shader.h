@@ -26,8 +26,8 @@ public:
     Shader(const std::string& filePath);
     ~Shader();
 
-    void Bind();
-    void UnBind();
+    void Bind() const;
+    void UnBind() const;
 
     void setUniform4f(const std::string& name, float v0, float v1, float v2, float v3){
         glUniform4f(GetUniformLocation(name), v0, v1, v2, v3);

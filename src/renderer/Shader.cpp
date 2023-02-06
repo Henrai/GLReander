@@ -20,11 +20,11 @@ Shader::~Shader() {
     GL_CALL(glDeleteProgram(mRendererID));
 }
 
-void Shader::Bind() {
+void Shader::Bind() const {
     GL_CALL(glUseProgram(mRendererID));
 }
 
-void Shader::UnBind() {
+void Shader::UnBind() const{
     GL_CALL(glUseProgram(0));
 }
 

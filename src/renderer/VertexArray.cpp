@@ -27,10 +27,10 @@ void VertexArray::AddBuffer(const VertexBuffer &vb, const VertexBufferLayout &la
     }
 }
 
-void VertexArray::Bind() {
+void VertexArray::Bind() const {
     GL_CALL(glBindVertexArray(mRendererID));
 }
 
-void VertexArray::UnBind() {
+void VertexArray::UnBind() const {
     GL_CALL(glBindVertexArray(0));
 }

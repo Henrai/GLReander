@@ -85,6 +85,8 @@ int main()
     ImGui_ImplOpenGL3_Init("#version 150");
 
     float f = 1.0;
+    Renderer renderer;
+
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
@@ -103,13 +105,9 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader.Bind();
-
-        va.Bind();
-
         shader.setUniform4f("ourColor", 1.0f, f, 1.0f, 1.0f);
 
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+        renderer.draw(va, ib, shader);
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
