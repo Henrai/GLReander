@@ -14,10 +14,13 @@ void main()
 #version 330 core
 out vec4 FragColor;
 in vec2 v_texCord;
-uniform vec4 ourColor;
-uniform sampler2D u_Texture;
+uniform float ourColor;
+uniform sampler2D u_Texture1;
+uniform sampler2D u_Texture2;
+
 void main()
 {
-   vec4 texColor = texture(u_Texture, v_texCord);
-   FragColor = ourColor * texColor;
+   vec4 texColor1 = texture(u_Texture1, v_texCord);
+   vec4 texColor2 = texture(u_Texture2, v_texCord);
+   FragColor = mix(texColor1, texColor2, ourColor) ;
 }

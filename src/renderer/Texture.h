@@ -6,6 +6,7 @@
 #define OGLRENDER_TEXTURE_H
 
 #include <string>
+#include <glad/glad.h>
 
 class Texture {
 private:
@@ -14,7 +15,7 @@ private:
     unsigned char* mLocalBuffer;
     int mWidth, mHeight, mBPP;
 public:
-    Texture(const std::string& path);
+    Texture(const std::string& path, unsigned int format = GL_RGB);
     ~Texture();
 
 

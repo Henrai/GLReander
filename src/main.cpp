@@ -55,9 +55,9 @@ int main()
     // ------------------------------------------------------------------
     float vertices[] = {
             0.5f,  0.5f,  1.f, 1.f,   // top right
-            0.5f, -0.5f,  0.f, 1.f,   // bottom right
+            0.5f, -0.5f,  1.f, 0.f,   // bottom right
             -0.5f, -0.5f,0.f, 0.f,   // bottom left
-            -0.5f, 0.5f, 1.f, 0.f,  // top left
+            -0.5f, 0.5f, 0.f, 1.f,  // top left
     };
     unsigned int indices[] = {  // note that we start from 0!
             0, 1, 3,  // first Triangle
@@ -65,9 +65,14 @@ int main()
     };
 
     shader.Bind();
-    Texture texture("res/textures/wall.jpeg");
-    texture.Bind();
-    shader.setUniform1i("u_Texture", 0);
+    Texture texture1("res/textures/wall.jpeg");
+    texture1.Bind();
+    shader.setUniform1i("u_Texture1", 0);
+
+    Texture texture2("res/textures/awesomeface.png", GL_RGBA);
+    texture2.Bind(1);
+    shader.setUniform1i("u_Texture2", 1);
+
     VertexArray va;
     VertexBuffer vb(vertices, 4 * 4 * sizeof(float ));
     VertexBufferLayout layout;
@@ -111,7 +116,9 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader.Bind();
-        shader.setUniform4f("ourColor", 1.0f, f, 1.0f, 1.0f);
+        shader.setUniform1f("ourColor", f);
+        texture1.Bind();
+        texture2.Bind(1);
 
         renderer.draw(va, ib, shader);
         ImGui::Render();

@@ -37,6 +37,10 @@ public:
         glUniform1i(GetUniformLocation(name), v);
     }
 
+    void setUniform1f(const std::string& name, float v) {
+        glUniform1f(GetUniformLocation(name), v);
+    }
+
 private:
     int GetUniformLocation(const std::string& name);
     ShaderProgramSource parseShader();
