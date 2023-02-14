@@ -6,11 +6,12 @@
 #include <imgui.h>
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imgui_impl_glfw.h"
-
+#include "stb_image/stb_image.h"
 #include "renderer/IndexBuffer.h"
 #include "renderer/VertexBuffer.h"
 #include "renderer/VertexArray.h"
 #include "renderer/Shader.h"
+#include "renderer/Texture.h"
 
 #define GL_SILENCE_DEPRECATION
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -53,26 +54,31 @@ int main()
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
-            0.5f,  0.5f,   // top right
-            0.5f, -0.5f,   // bottom right
-            -0.5f, -0.5f,   // bottom left
-            -0.5f,  0.5f,    // top left
+            0.5f,  0.5f,  1.f, 1.f,   // top right
+            0.5f, -0.5f,  0.f, 1.f,   // bottom right
+            -0.5f, -0.5f,0.f, 0.f,   // bottom left
+            -0.5f, 0.5f, 1.f, 0.f,  // top left
     };
     unsigned int indices[] = {  // note that we start from 0!
             0, 1, 3,  // first Triangle
             1, 2, 3   // second Triangle
     };
 
+    shader.Bind();
+    Texture texture("res/textures/wall.jpeg");
+    texture.Bind();
+    shader.setUniform1i("u_Texture", 0);
     VertexArray va;
-
-    VertexBuffer vb(vertices, 4 * 3 * sizeof(float ));
-
+    VertexBuffer vb(vertices, 4 * 4 * sizeof(float ));
     VertexBufferLayout layout;
+
+    layout.Push<float>(2);
     layout.Push<float>(2);
     va.AddBuffer(vb, layout);
     IndexBuffer ib(indices, 6);
     ib.UnBind();
     va.UnBind();
+    shader.UnBind();
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();

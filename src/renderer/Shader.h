@@ -33,8 +33,12 @@ public:
         glUniform4f(GetUniformLocation(name), v0, v1, v2, v3);
     }
 
+    void setUniform1i(const std::string& name, int v){
+        glUniform1i(GetUniformLocation(name), v);
+    }
+
 private:
-    unsigned int GetUniformLocation(const std::string& name);
+    int GetUniformLocation(const std::string& name);
     ShaderProgramSource parseShader();
     unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader);
     unsigned int CompileShader(unsigned int type, const std::string source);

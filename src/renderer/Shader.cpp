@@ -24,7 +24,7 @@ void Shader::Bind() const {
     GL_CALL(glUseProgram(mRendererID));
 }
 
-void Shader::UnBind() const{
+void Shader::UnBind() const {
     GL_CALL(glUseProgram(0));
 }
 
@@ -87,10 +87,10 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string shader) 
     return id;
 }
 
-unsigned int Shader::GetUniformLocation(const std::string &name) {
+ int Shader::GetUniformLocation(const std::string &name) {
     if(mUniformLocationCache.find(name) != mUniformLocationCache.end())
         return mUniformLocationCache[name];
-    GL_CALL(unsigned int location = glGetUniformLocation(mRendererID, name.c_str()));
+    GL_CALL( int location = glGetUniformLocation(mRendererID, name.c_str()));
     if(location == -1) {
         std::cout << "Warning: " << name << " doesn't exist" << std::endl;
     }
