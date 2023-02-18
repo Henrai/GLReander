@@ -49,7 +49,6 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-    Shader shader("res/shaders/rectangle.shader");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -63,27 +62,24 @@ int main()
             0, 1, 3,  // first Triangle
             1, 2, 3   // second Triangle
     };
-
-    shader.Bind();
-    Texture texture1("res/textures/wall.jpeg");
-    texture1.Bind();
-    shader.setUniform1i("u_Texture1", 0);
-
-    Texture texture2("res/textures/awesomeface.png", GL_RGBA);
-    texture2.Bind(1);
-    shader.setUniform1i("u_Texture2", 1);
-
-    VertexArray va;
-    VertexBuffer vb(vertices, 4 * 4 * sizeof(float ));
-    VertexBufferLayout layout;
-
-    layout.Push<float>(2);
-    layout.Push<float>(2);
-    va.AddBuffer(vb, layout);
-    IndexBuffer ib(indices, 6);
-    ib.UnBind();
-    va.UnBind();
-    shader.UnBind();
+    glEnable(GL_BLEND);// you enable blending function
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    Renderer renderer;
+    renderer.initShader("res/shaders/rectangle.shader");
+    renderer.appendTexture("res/textures/wall.jpeg","u_Texture1" );
+    renderer.appendTexture("res/textures/awesomeface.png", "u_Texture2", GL_RGBA);
+    renderer.initVertexData(vertices, 4*4, indices, 6, {2,2});
+//    VertexArray va;
+//    VertexBuffer vb(vertices, 4 * 4 * sizeof(float ));
+//    VertexBufferLayout layout;
+//
+//    layout.Push<float>(2);
+//    layout.Push<float>(2);
+//    va.AddBuffer(vb, layout);
+//    IndexBuffer ib(indices, 6);
+//    ib.UnBind();
+//    va.UnBind();
+//    renderer.getShader().UnBind();
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -96,7 +92,7 @@ int main()
     ImGui_ImplOpenGL3_Init("#version 150");
 
     float f = 1.0;
-    Renderer renderer;
+
 
     while (!glfwWindowShouldClose(window))
     {
@@ -115,12 +111,10 @@ int main()
         glClearColor(  0.2f,  0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        shader.Bind();
-        shader.setUniform1f("ourColor", f);
-        texture1.Bind();
-        texture2.Bind(1);
 
-        renderer.draw(va, ib, shader);
+        renderer.setUniform1f("ourColor", f);
+
+        renderer.draw();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -129,7 +123,7 @@ int main()
         glfwPollEvents();
     }
 
-    shader.UnBind();
+    renderer.unBind();
     glfwTerminate();
     return 0;
 }
