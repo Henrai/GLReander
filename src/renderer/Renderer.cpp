@@ -36,7 +36,7 @@ void Renderer::appendTexture(const std::string &path,const std::string& name , u
     mTextures.push_back(std::move(texture));
 }
 
-void Renderer::initVertexData(float *vertices, unsigned int vlen, unsigned int* indices, unsigned int ilen, std::vector<int> layout) {
+void Renderer::initVertexData(float *vertices, unsigned int vlen, unsigned int* indices, unsigned int ilen, const std::vector<int>& layout) {
     mVertexArray = std::make_unique<VertexArray>();
     mVertexBuffer = std::make_unique<VertexBuffer>(vertices, vlen * sizeof(float ));
 
@@ -45,24 +45,40 @@ void Renderer::initVertexData(float *vertices, unsigned int vlen, unsigned int* 
         bufferLayout.Push<float>(i);
     }
     mVertexArray->AddBuffer(*mVertexBuffer, bufferLayout);
-     mIndexBuffer = std::make_unique<IndexBuffer>(indices, 6);
+    mIndexBuffer = std::make_unique<IndexBuffer>(indices, ilen);
     mIndexBuffer->UnBind();
     mVertexBuffer->UnBind();
     mShader->UnBind();
 }
 
-Shader& Renderer::getShader() {
-    return *mShader;
+void Renderer::initVertexData(float *vertices, unsigned int vlen, const std::vector<int> &layout) {
+    mVertexArray = std::make_unique<VertexArray>();
+    mVertexBuffer = std::make_unique<VertexBuffer>(vertices, vlen * sizeof(float ));
+
+    VertexBufferLayout bufferLayout;
+    int cnt = 0;
+    for(auto i:layout) {
+        bufferLayout.Push<float>(i);
+        cnt += i;
+    }
+    mVertexArray->AddBuffer(*mVertexBuffer, bufferLayout);
+    mVertexArray->setVertexCount(vlen/cnt);
+    mVertexBuffer->UnBind();
+    mShader->UnBind();
 }
 
 
 void Renderer::draw() const {
     mShader->Bind();
     mVertexArray->Bind();
-    mIndexBuffer->Bind();
     for(int i = 0; i < mTextures.size(); i++)
         mTextures[i]->Bind(i);
-    GL_CALL(glDrawElements(GL_TRIANGLES, mIndexBuffer->GetSize(), GL_UNSIGNED_INT, nullptr));
+    if(mIndexBuffer.get() != nullptr) {
+        mIndexBuffer->Bind();
+        GL_CALL(glDrawElements(GL_TRIANGLES, mIndexBuffer->GetSize(), GL_UNSIGNED_INT, nullptr));
+    } else {
+        GL_CALL(glDrawArrays(GL_TRIANGLES, 0, mVertexArray->getVertexCount()));
+    }
 }
 
 void Renderer::setUniform1i(const std::string &name, int v) {
@@ -83,5 +99,6 @@ void Renderer::setUniform4f(const std::string &name, float v0, float v1, float v
 void Renderer::unBind() {
     mShader->UnBind();
     mVertexArray->UnBind();
-    mIndexBuffer->UnBind();
+    if (mIndexBuffer.get() != nullptr)
+        mIndexBuffer->UnBind();
 }

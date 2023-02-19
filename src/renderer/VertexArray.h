@@ -10,11 +10,14 @@
 class VertexArray {
 private:
     unsigned  int mRendererID;
+    unsigned int mCnt;
 public:
     VertexArray();
     ~VertexArray();
 
     void AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout);
+    void setVertexCount(unsigned int cnt) {mCnt = cnt;}
+    unsigned int getVertexCount() {return mCnt;}
 
     void Bind() const;
     void UnBind() const;

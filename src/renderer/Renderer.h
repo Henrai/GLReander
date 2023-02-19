@@ -34,8 +34,8 @@ private:
 public:
     void initShader(const std::string& path);
     void appendTexture(const std::string& path, const std::string& name , unsigned int format = GL_RGB);
-    void initVertexData(float *vertices, unsigned int vlen, unsigned int* indices, unsigned int ilen, std::vector<int> layout);
-    Shader& getShader();
+    void initVertexData(float *vertices, unsigned int vlen, unsigned int* indices, unsigned int ilen, const std::vector<int>& layout);
+    void initVertexData(float *vertices, unsigned int vlen, const std::vector<int>& layout);
     void draw() const;
     void setUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
     void setUniform1i(const std::string& name, int v);

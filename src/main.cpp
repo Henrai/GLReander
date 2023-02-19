@@ -55,6 +55,9 @@ int main()
     float vertices[] = {
             0.5f,  0.5f,  1.f, 1.f,   // top right
             0.5f, -0.5f,  1.f, 0.f,   // bottom right
+            -0.5f, 0.5f, 0.f, 1.f,  // top left
+
+            0.5f, -0.5f,  1.f, 0.f,   // bottom right
             -0.5f, -0.5f,0.f, 0.f,   // bottom left
             -0.5f, 0.5f, 0.f, 1.f,  // top left
     };
@@ -68,18 +71,7 @@ int main()
     renderer.initShader("res/shaders/rectangle.shader");
     renderer.appendTexture("res/textures/wall.jpeg","u_Texture1" );
     renderer.appendTexture("res/textures/awesomeface.png", "u_Texture2", GL_RGBA);
-    renderer.initVertexData(vertices, 4*4, indices, 6, {2,2});
-//    VertexArray va;
-//    VertexBuffer vb(vertices, 4 * 4 * sizeof(float ));
-//    VertexBufferLayout layout;
-//
-//    layout.Push<float>(2);
-//    layout.Push<float>(2);
-//    va.AddBuffer(vb, layout);
-//    IndexBuffer ib(indices, 6);
-//    ib.UnBind();
-//    va.UnBind();
-//    renderer.getShader().UnBind();
+    renderer.initVertexData(vertices, 6*4,  {2,2});
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
