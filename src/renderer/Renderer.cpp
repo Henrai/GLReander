@@ -96,6 +96,11 @@ void Renderer::setUniform4f(const std::string &name, float v0, float v1, float v
     mShader->setUniform4f(name, v0, v1, v2, v3);
 }
 
+void Renderer::setUniformMat4fv(const std::string &name, const glm::mat4 &mat) {
+    mShader->Bind();
+    mShader->setUniformMat4fv(name, mat);
+}
+
 void Renderer::unBind() {
     mShader->UnBind();
     mVertexArray->UnBind();

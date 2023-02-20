@@ -8,6 +8,8 @@
 #include <string>
 #include <glad/glad.h>
 #include <unordered_map>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 struct ShaderProgramSource;
 
@@ -41,6 +43,9 @@ public:
         glUniform1f(GetUniformLocation(name), v);
     }
 
+    void setUniformMat4fv(const std::string& name, const glm::mat4& mat) {
+        glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(mat));
+    }
 private:
     int GetUniformLocation(const std::string& name);
     ShaderProgramSource parseShader();

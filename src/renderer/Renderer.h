@@ -13,6 +13,7 @@
 #include <memory>
 #include <vector>
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 
 class VertexArray;
 class VertexBuffer;
@@ -40,6 +41,7 @@ public:
     void setUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
     void setUniform1i(const std::string& name, int v);
     void setUniform1f(const std::string& name, float v);
+    void setUniformMat4fv(const std::string& name, const glm::mat4& mat);
 
     void unBind();
 };
